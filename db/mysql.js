@@ -23,6 +23,10 @@ const sequelize = new Sequelize({
   }
 })
 
+
+sequelize.sync({ alter: true})
+
+
 const tesxConect = async() => {
   try {
     await sequelize.authenticate()

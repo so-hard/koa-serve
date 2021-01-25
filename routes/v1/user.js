@@ -1,7 +1,7 @@
 import Router from 'koa-router'
 
-import { register, login } from '../controller/user.js'
-import { getTokenFromDatrix } from '../controller/other.js'
+import { register, login } from '../../controller/user.js'
+import { getTokenFromDatrix } from '../../controller/other.js'
 
 const router = Router()
 const handleRes = (ctx, next, res) => {
@@ -12,7 +12,7 @@ const handleRes = (ctx, next, res) => {
     ctx.body = res
   }
 }
-router.prefix('/user')
+router.prefix('/api/v1/user')
 
 router.post('/register', async(ctx, next) => {
   const { username, password } = ctx.request.body

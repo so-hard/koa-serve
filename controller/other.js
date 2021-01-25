@@ -75,7 +75,7 @@ async function upLoadeFile(parentId,parentId,fileName,fileName) {
   try {
     let res = Axios.post("/api/af/file/uploadOnce", {
       mode:0,parentId,parentId,fileName,directCheck:false,isDir:false,
-      fileName;
+      fileName
     })
     console.log(res)
   } catch (error) {

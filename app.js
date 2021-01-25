@@ -2,8 +2,10 @@ import Koa from 'koa'
 import json from 'koa-json'
 import jwt from 'koa-jwt'
 import bodyParser from 'koa-bodyparser'
-import { fun } from './model/user.js'
 
+
+import User from "./model/user.js"
+import  UserAuth from "./model/userAuth.js"
 const TOKEN_SECRETKEY = 'secretkey'
 const app = new Koa()
 
@@ -29,6 +31,7 @@ getModel('routes', (route) => {
   app.use(route.routes())
 })
 
-fun()
+ User
+ UserAuth
 
 export default app

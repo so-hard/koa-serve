@@ -5,7 +5,7 @@ if (env === 'dev') {
   MYSQL_CONF = {
     user: 'root',
     password: '123456',
-    database: 'test_admin'
+    database: 'test'
   }
 }
 
