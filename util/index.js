@@ -15,13 +15,15 @@ const getModel = (path, fn) => {
     files.forEach(async (item) => {
       const fPath = join(path, item)
       const stat = fs.statSync(fPath)
-      if (stat.isDirectory() === true)      getFiles(item)
+      if (stat.isDirectory() === true)  {
+        return getFiles(fPath)
+      }
       if (stat.isFile() === true) {
         try {
-          let _module = await import(`../${fPath}`)
-          fn(_module.default)
+          const  _moudel = await import(`../${fPath}`)
+          await fn(_moudel.default)
         } catch (error) {
-          console.error(error.message)
+          console.error(error)
         }
       }
     })
