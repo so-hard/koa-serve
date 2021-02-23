@@ -1,7 +1,9 @@
 import {sequelize} from '../db/mysql.js'
 import Sequelize from 'sequelize'
 
+import {genPassword} from './../util/index.js'
 import User from './user.js' 
+import dayjs from 'dayjs'
 
 
 const  { DataTypes, Model } = Sequelize
@@ -17,23 +19,41 @@ UserAuth.init({
   },
   identity_type:{
     type:DataTypes.STRING,
-    allowNull:true,
     allowNull:false,
     comment:' 登录类型'
   },
   identifier :{
     type:DataTypes.STRING,
     allowNull:false,
-    comment:'唯一标识'
+    comment:'唯一标识',
   },
   credential:{
     type:DataTypes.STRING,
     allowNull:false,
-    comment:'密码凭证'
+    comment:'密码凭证',
+    set(val){
+      if(this.getDataValue('identity_type') === 'email'){
+        this.setDataValue('credential',genPassword(val))
+      }
+    }
+  },
+  createdAt:{
+    type:DataTypes.DATE,
+    allowNull:false,
+    get(){
+      return dayjs(this.getDataValue('createdAt')).unix()
+    }
+  },
+  updatedAt:{
+    type:DataTypes.DATE,
+    allowNull:false,
+    get(){
+      return dayjs(this.getDataValue('updatedAt')).unix()
+    }
   }
 },{
   sequelize,
-  timestamps: true,
+  timestamps:true
 })
 
 UserAuth.belongsTo(User,{
