@@ -10,7 +10,7 @@ export default class UserDao {
    * @param {String} params.identifier
    * @param {String} params.credential
    */
-  static async create(params) {
+  static async signUp(params) {
     const {identity_type,identifier,credential} = params;
     const hasUserAuth = await UserAuth.findOne({
       where: {

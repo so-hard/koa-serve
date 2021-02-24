@@ -1,12 +1,12 @@
 import Router from 'koa-router'
 import UserDao from '../../dao/user.js'
-import {register} from '../../controller/user.js'
+import {register,signIn} from '../../controller/user.js'
 const router =  Router()
 
 router.prefix('/api/v2/user')
 
 // console.log(register)
-router.post('/signUp',register)
+router.post('/register',register)
 // router.post('/signUp', async(ctx, next) =>  {
 //   try {
 //     let resData =  await UserDao.create(ctx.request.body)
@@ -21,9 +21,7 @@ router.post('/signUp',register)
 // })
 
 
-router.post('/signIn',async(ctx,next) => {
-
-})
+router.post('/signIn',signIn)
 
 router.get('/test', async (ctx,next) => {
   console.log(ctx);

@@ -5,10 +5,30 @@ import { TOKEN_SECRETKEY } from '../config/secret.js'
 import User from '../model/user.js'
 import UserAuth from '../model/userAuth.js'
 
-
+/**
+ * @api {psot} /v2/user/register 
+ * @apiName 用户注册
+ * @apiGroup User
+ * 
+ * @apiParam {String} identity_type 登录类型,qq,wx,email,phone.
+ * @apiParam {String} identifier 唯一标识,qq号,wx号,邮箱
+ * @apiParam  {String} credential 登陆凭证
+ * 
+ * @apiSuccessExample Success-Response:
+ *  {
+ *    data: {
+        id:'1',
+        username:'defalut',
+        avatar:'defalut.jpg',
+        sex:'0',
+        createdAt:'2020.09.03'
+      },
+      code: 200,
+      msg: '创建成功'
+ *  }
+ */
 const register = async (ctx, next) => {
   try {
-    // console.log(ctx)
     const { identity_type, identifier, credential } = ctx.request.body;
     const hasUserAuth = await UserAuth.findOne({
       where: {
@@ -43,33 +63,58 @@ const register = async (ctx, next) => {
   }
 }
 
-const login = async (username, password) => {
+
+/**
+ * @api {psot} /v2/user/signIn 
+ * @apiName 用户登录
+ * @apiGroup User
+ * 
+ * @apiParam {String} identity_type 登录类型,qq,wx,email,phone.
+ * @apiParam {String} identifier 唯一标识,qq号,wx号,邮箱
+ * @apiParam  {String} credential 登陆凭证
+ * 
+ * @apiSuccessExample Success-Response:
+ *  {
+ *    data: {
+        id:'1',
+        username:'defalut',
+        avatar:'defalut.jpg',
+        sex:'0',
+        createdAt:'2020.09.03'
+      },
+      code: 200,
+      msg: '创建成功'
+ *  }
+ */
+const signIn = async (ctx,next) => {
   try {
-    const checkNameRes = await checkName(username)
-    // console.trace(checkNameRes[0][0].username)
-    if (!checkNameRes[0].length) {
-      return Promise.reject({
-        data: '',
-        code: 400,
-        message: '该用户不存在'
-      })
-    }
-    const encryption = genPassword(password)
-    // console.log(sql)
-    const res = await db.query(`select username from users where username=? and password=?`, [username, encryption])
-    if (res) {
-      await db.query(`insert into users (lastLoginTime) values (?) `, [Date.now()])
-      return {
-        code: 200,
-        data: {
-          username,
-          token: jwt.sign({ username }, TOKEN_SECRETKEY, { expiresIn: '7d' })
-        },
-        msg: '登陆成功'
+    const { identity_type, identifier,credential} = ctx.request.body;
+    // console.log( ctx.request.body)
+    const hasUserAuth = await UserAuth.findOne({
+      where: {
+        identity_type,
+        identifier,
+      }
+    })
+    if(!hasUserAuth){
+      throw {
+        data: [],
+        code:400,
+        msg: '用户不存在'
       }
     }
+    if(!(genPassword(credential) === hasUserAuth.credential)){
+      console.log(genPassword(credential), hasUserAuth.credential)
+      throw {
+        data: [],
+        code :400,
+        msg: '密码凭证错误'
+      }
+    }
+    console.log(jwt)
   } catch (error) {
-    console.error(error.message)
+    console.error(error)
+    ctx.body = error
   }
 }
 
@@ -87,5 +132,5 @@ const checkName = async (username) => {
 
 export {
   register,
-  login
+  signIn
 }

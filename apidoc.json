@@ -1,0 +1,10 @@
+{
+  "name": "角色权限管理系统api",
+  "version": "0.0.1",
+  "url":"localhost:9900/api",
+  "template": {
+  	"withCompare": true,
+  	"withGenerator": false,
+    "aloneDisplay":false
+  }
+}
