@@ -2,11 +2,7 @@ import Koa from 'koa'
 import json from 'koa-json'
 import jwt from 'koa-jwt'
 import bodyParser from 'koa-bodyparser'
-
-
-import User from "./model/user.js"
-import  UserAuth from "./model/userAuth.js"
-const TOKEN_SECRETKEY = 'secretkey'
+import { TOKEN_SECRETKEY } from './config/secret.js'
 const app = new Koa()
 
 // 路由
@@ -31,19 +27,16 @@ app.use(async(ctx, next) => {
     }
   }
 })
-
-const unPath = [/^\/$/, /public/, /checkName/, /signUp/, /getIpInfo/, /login/, /test/, /otherLogin/,/signIn/]
+const unPath = [/^\/$/, /public/, /checkName/, /register/, /getIpInfo/, /login/, /otherLogin/,/signIn/]
 const buildFiles = [/\.js$/, /\.css$/, /\.less$/, /\.ico/, /\.json$/, /static/] // 前端打包后不需要验证的资源
 
 
 
-app.use(jwt({ secret: TOKEN_SECRETKEY, cookie: 'sessionId' }).unless({ path: unPath.concat(buildFiles) }))
+app.use(jwt({secret:TOKEN_SECRETKEY}).unless({ path: unPath.concat(buildFiles)}))
 
 getModel('routes', async (route) => {
   app.use(route.routes())
 })
 
- User
- UserAuth
 
 export default app

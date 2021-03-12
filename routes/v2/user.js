@@ -25,6 +25,5 @@ router.post('/signIn',signIn)
 
 router.get('/test', async (ctx,next) => {
   console.log(ctx);
-
 })
 export default router

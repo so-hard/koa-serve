@@ -6,10 +6,14 @@ import User from '../model/user.js'
 import UserAuth from '../model/userAuth.js'
 
 /**
- * @api {psot} /v2/user/register 
- * @apiName 用户注册
+ * @api {psot} /v2/user/register 用户注册
+ * @apiName userlogin
  * @apiGroup User
- * 
+ * @apiVersion 0.0.1
+
+ * @apiHeader {String} Authorization 需要token
+ * @apiExample {bash} Curl example
+ * curl -H "Authorization: token 5f048fe" -i https://api.example.com/user/4711
  * @apiParam {String} identity_type 登录类型,qq,wx,email,phone.
  * @apiParam {String} identifier 唯一标识,qq号,wx号,邮箱
  * @apiParam  {String} credential 登陆凭证
@@ -29,6 +33,7 @@ import UserAuth from '../model/userAuth.js'
  */
 const register = async (ctx, next) => {
   try {
+    // console.log(ctx.request)
     const { identity_type, identifier, credential } = ctx.request.body;
     const hasUserAuth = await UserAuth.findOne({
       where: {
@@ -43,17 +48,12 @@ const register = async (ctx, next) => {
         data: []
       }
     }
-    const defaultUser = await User.create()
+    await User.create()
+    // console.log(defaultUser)
     await UserAuth.create({ identity_type, identifier, credential, user_id: defaultUser.id })
-    const { id, avatar, username, sex, createdAt } = defaultUser;
+    // const { id, avatar, username, sex, createdAt } = defaultUser;
     ctx.body = {
-      data: {
-        id,
-        username,
-        avatar,
-        sex,
-        createdAt
-      },
+      data: [],
       code: 200,
       msg: '创建成功'
     }
@@ -65,9 +65,10 @@ const register = async (ctx, next) => {
 
 
 /**
- * @api {psot} /v2/user/signIn 
- * @apiName 用户登录
+ * @api {psot} /v2/user/signIn 用户登录
+ * @apiName usersignIn
  * @apiGroup User
+ * @apiVersion 0.0.1
  * 
  * @apiParam {String} identity_type 登录类型,qq,wx,email,phone.
  * @apiParam {String} identifier 唯一标识,qq号,wx号,邮箱
@@ -94,7 +95,8 @@ const signIn = async (ctx,next) => {
       where: {
         identity_type,
         identifier,
-      }
+      },
+      // include:User
     })
     if(!hasUserAuth){
       throw {
@@ -111,11 +113,26 @@ const signIn = async (ctx,next) => {
         msg: '密码凭证错误'
       }
     }
-    console.log(jwt)
+    const curUser  = await hasUserAuth.getUser();
+    const token = jwt.sign({id:curUser.id,},TOKEN_SECRETKEY,{expiresIn: 60 * 60});
+    // let {username,} = curUser;
+    ctx.body = {
+      data: {
+          token,
+          userInfo:curUser
+      },
+      code:200,
+      msg:'登录成功'
+    }
   } catch (error) {
     console.error(error)
     ctx.body = error
   }
+}
+
+
+const testToken = (ctx,next) => {
+  console.log(ctx.request)
 }
 
 /**
@@ -132,5 +149,6 @@ const checkName = async (username) => {
 
 export {
   register,
-  signIn
+  signIn,
+  testToken
 }
