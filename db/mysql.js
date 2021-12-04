@@ -13,6 +13,7 @@ async function main() {
   }
 }
 
+// @ts-ignore
 const sequelize = new Sequelize({
   username: MYSQL_CONF.user,
   password: MYSQL_CONF.password,
